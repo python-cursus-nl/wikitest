@@ -71,18 +71,6 @@ def create_test(text):
     return response.choices[0].message.content
 
 
-def parse_response(ai_response):
-    """
-    Het model geeft JSON terug, lees dit in en geef de samenvatting
-    en vragen apart terug
-    """
-    result_json = json.loads(ai_response)
-    samenvatting = result_json.get("samenvatting")
-    vragen = result_json["vragen"]
-
-    return samenvatting, vragen
-
-
 def take_test():
     """Functie die de samenvatting presenteert en de toets afneemt."""
 
@@ -90,6 +78,7 @@ def take_test():
     print("Geef de titel op (haal dit uit de url, na '/wiki/'")
     titel = input("Titel: ")
 
+    # Lees de Wikipedia-pagina in
     try:
         text = read_wiki(titel=titel)
     except ValueError as e:
@@ -105,7 +94,9 @@ def take_test():
 
     # Zet om van JSON naar dict
     try:
-        samenvatting, vragen = parse_response(ai_response=result)
+        result_json = json.loads(result)
+        samenvatting = result_json.get("samenvatting")
+        vragen = result_json.get("vragen")
     except KeyError as e:
         print(e)
         exit()
